@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Empleados</title>
+</head>
+<body>
+    <h1>Lista de Empleados</h1>
+    <ul>
+        {% for empleado in empleados %}
+            <li>{{ empleado.nombre }} {{ empleado.apellido }} - {{ empleado.cargo }}</li>
+            {% if empleado.verificar_entrada_hoy %}
+                <form method="post" action="{% url 'empleados:marcar_salida' empleado.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Marcar Salida">
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'empleados:marcar_entrada' empleado.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Marcar Entrada">
+                </form>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
+

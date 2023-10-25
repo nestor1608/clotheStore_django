@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+</head>
+<body>
+    <h1>Nueva Venta</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h3>Productos</h3>
+        {{ form.itemventa_formset.management_form }}
+        <table>
+            {% for formset_form in form.itemventa_formset %}
+                {{ formset_form.as_table }}
+            {% endfor %}
+        </table>
+        <input type="submit" value="Registrar Venta">
+    </form>
+    <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+</body>
+</html>
