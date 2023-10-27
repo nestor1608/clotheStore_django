@@ -1,5 +1,5 @@
 from django.db import models
-from products.models import Product
+from products.models import ProductDataGeneral
 import shortuuid
 from django.core.exceptions import ValidationError
 # Create your models here.
@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 
 class StockProduct(models.Model):
     stock_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable= False)
-    id_product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='stock_product' )
+    id_product = models.ForeignKey(ProductDataGeneral,on_delete=models.CASCADE,related_name='stock_product' )
     amount_stock = models.DecimalField(max_digits=10, decimal_places=2)
     amount_show = models.DecimalField(max_digits=10, decimal_places=2)
     amount_deposit = models.DecimalField(max_digits=10, decimal_places=2)

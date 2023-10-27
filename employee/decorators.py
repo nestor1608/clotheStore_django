@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
+
 # Función de prueba para verificar si el usuario es un cliente
 def is_cliente(user):
     return user.groups.filter(name='Cliente').exists()

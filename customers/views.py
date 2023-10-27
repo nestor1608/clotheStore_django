@@ -7,25 +7,11 @@ from django.urls import reverse_lazy
 from .models import Customer, Address
 from .forms import CustomerAddressForm
 
-class CreateCustomerAddressView(CreateView):
-    template_name = 'template.html'
+class ClienteCreateView(CreateView):
+    model = Customer
     form_class = CustomerAddressForm
-    success_url = reverse_lazy('customers:customer_detail')  # Reemplaza 'nombre_de_la_vista_de_exito'
-
-    def form_valid(self, form):
-        # Guardar el formulario sin commit para obtener el cliente
-        customer = form.save(commit=False)
-        customer.save()
-
-        # Obtener la instancia de Address del formulario
-        address = form.cleaned_data.get('address')  # Asegúrate de que este sea el nombre correcto del campo en tu formulario
-
-        if address:
-            # Establecer el campo id_cliente de Address con el ID del cliente
-            address.id_cliente = customer.customer_id
-            address.save()
-
-        return super().form_valid(form)
+    template_name = 'crear_cliente.html'
+    success_url = reverse_lazy('cliente_list')
 
 class CustomerDetailView(DetailView):
     model = Customer

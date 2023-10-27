@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from products.models import Product
+from products.models import ProductDataGeneral
 from stock.models import StockProduct
 from customers.models import Customer
 from employee.models import Employee
@@ -23,7 +23,7 @@ class Sale(models.Model):
     
 class ItemSale(models.Model):
     id_sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
-    id_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='item_sales')
+    id_product = models.ForeignKey(ProductDataGeneral, on_delete=models.CASCADE, related_name='item_sales')
     price_unit = models.DecimalField(max_digits=10, decimal_places=2)
     cantidad = models.PositiveIntegerField(default=1)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)

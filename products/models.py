@@ -38,6 +38,8 @@ class ProductDataGeneral(models.Model):
     name = models.CharField(max_length=100)
     imagen_url = models.CharField(max_length=255, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
+    
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.DO_NOTHING)
     brand = models.CharField(max_length=50, blank=True, null=True) 
     
     provider = models.ManyToManyField(Providers, blank=True, related_name='provider')
@@ -59,7 +61,7 @@ class ProductDataGeneral(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f'{self.product_id} - {self.name}'
 
 # ------------------ VARIABLES QUE DETERMINAN EL PRECIO DE VENTA -----------------------
 
