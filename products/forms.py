@@ -4,29 +4,19 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from django.contrib.auth import get_user
 from PIL import Image
-from .models import Product, Category
+from .models import ProductDataGeneral, Category,ValuesPriceProduct,SubCategory
 
 
 
-class ProductoForm(forms.ModelForm):
+class ProductForm(forms.ModelForm):
     class Meta:
-        model = Product
+        model = ProductDataGeneral
         fields = ['name', 
                 'category', 
                 'brand', 
                 'provider', 
                 'number_serie', 
                 'description', 
-                'price',
-                'price_cost',
-                'price_sale',
-                'price_wholesale',
-                'price_discount',
-                'suggested_price',
-                'market_price',
-                'last_price', 
-                'expiration_date', 
-                'discount', 
                 'imagen_url']
 
     def save(self, commit=True, request=None):
@@ -40,7 +30,7 @@ class ProductoForm(forms.ModelForm):
 
         # Guarda la imagen en un búfer
         img_buffer = io.BytesIO()
-        img.save(img_buffer, format='JPEG')  # Puedes cambiar el formato según lo necesites
+        img.save(img_buffer, format='WEBP')  # Puedes cambiar el formato según lo necesites
         img_buffer.seek(0)
 
         # Sube la imagen a Google Drive
@@ -83,6 +73,13 @@ class ProductoForm(forms.ModelForm):
         image_url = f"https://drive.google.com/file/d/{file['id']}/view"
 
         return image_url
+
+class ValuePriceForm(forms.ModelForm):
+    
+    class Meta:
+        model = ValuesPriceProduct
+        fields = '__all__'
+
 
 class CategoryForm(forms.ModelForm):
     
