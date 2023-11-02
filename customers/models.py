@@ -1,15 +1,16 @@
 from django.db import models
 import shortuuid
-from employee.models import Address
-
-from django.contrib.auth.models import User
-
-
-
+from employee.models import Address, CustomUser
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 
 
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+
+class Customer(AbstractUser):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     # Campo de ID único
     customer_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable=False)
 
@@ -27,6 +28,11 @@ class Customer(models.Model):
     # Información de contacto
     telephone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(max_length=255, unique=True)
+    
+    
+    # En el modelo Customer
+    groups = models.ManyToManyField(Group, related_name='customer_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='customer_user_permissions')
 
     # Fecha de registro (fecha de creación)
     created_at = models.DateTimeField(auto_now_add=True)

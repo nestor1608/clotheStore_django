@@ -38,29 +38,37 @@ class Address(models.Model):
     def __str__(self):
         return f'{self.street}, {self.town}, {self.province}, {self.country}'
 
+class CustomUser(AbstractUser):
+    ROL_CHOICES = (
+        ('superuser', 'Superuser'),
+        ('employee', 'Employee'),
+        ('manager', 'Manager'),
+        ('customer', 'Customer'),
+    )
+    rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='customer')
+    # En el modelo CustomUser
+    groups = models.ManyToManyField(Group, related_name='custom_user_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_permissions')
+
+
+
 class Employee(AbstractUser):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.ForeignKey(Address, related_name='direccion', on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=[('Masculino', 'Masculino'), ('Femenino', 'Femenino'), ('Otro', 'Otro')], null=True, blank=True)
     dni = models.CharField(max_length=128, unique=True)  # Asumimos un máximo de 128 caracteres para el hash
     email = models.EmailField()
     position = models.CharField(max_length=100)
     department = models.CharField(max_length=100, null=True, blank=True)
     hire_date = models.DateField(null=True, blank=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    employee_type = models.CharField(max_length=10, choices=[('gerente', 'Gerente'), ('empleado', 'Empleado')])
+
+    # En el modelo Employee
+    groups = models.ManyToManyField(Group, related_name='employee_groups')
+    user_permissions = models.ManyToManyField(Permission, related_name='employee_user_permissions')
     
-    groups = models.ManyToManyField(
-        Group,
-        blank=True,
-        related_name='employee_groups'  # Puedes usar cualquier nombre descriptivo aquí
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        blank=True,
-        related_name='employee_user_permissions'  # Puedes usar cualquier nombre descriptivo aquí
-    )
     # Registration Date (Creation Date)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -68,17 +76,13 @@ class Employee(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.id} - {self.first_name} {self.last_name} - {self.position}"
+        return f"{self.pk} - {self.first_name} {self.last_name} - {self.position}"
 
 
 
 class Manager(Employee):
     pass
     # Agrega campos adicionales para el gerente
-
-
-class EmployeeSeller(Employee):
-    pass
 
 
 

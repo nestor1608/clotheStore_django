@@ -36,7 +36,7 @@ class SubCategory(models.Model):
 class ProductDataGeneral(models.Model):
     product_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable= False)
     name = models.CharField(max_length=100)
-    imagen_url = models.CharField(max_length=255, blank=True, null=True)
+    img = models.ImageField(upload_to='media/product')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     
     sub_category = models.ForeignKey(SubCategory, on_delete=models.DO_NOTHING)
@@ -48,8 +48,6 @@ class ProductDataGeneral(models.Model):
 
     description = models.TextField(blank=True, null=True)
     
-    expiration_date = models.DateField(blank=True, null=True)
-
     # persona que realiza la carga del producto
     user_create_price = models.ForeignKey(User, on_delete=models.DO_NOTHING, editable= False)
     

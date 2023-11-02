@@ -2,9 +2,9 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from .forms import ProductForm, CategoryForm,ValuePriceForm
-from .models import ProductDataGeneral, Category,ValuesPriceProduct
+from .models import ProductDataGeneral, Category,ValuesPriceProduct,SubCategory
 from providers.models import Providers
-from django.views.decorators.csrf import csrf_exempt
+
 from django.shortcuts import render, redirect
 
 
@@ -26,55 +26,42 @@ class ProductListView(ListView):
         context['search_term'] = self.request.GET.get('search', '')
         context['categories'] = Category.objects.all()
         context['providers'] = Providers.objects.all()
+        context['subcategories'] = SubCategory.objects.all()
         return context
 
-# class AutocompleteProductsView(TemplateView):
-#     def get(self, request, *args, **kwargs):
-#         term = request.GET.get('term', '')
-#         products = ProductDataGeneral.objects.filter(name__icontains=term).values()[:10]  # Limita a 10 sugerencias
-#         results = [{'id':product['id'],'text':product['name']} for product in products]
-#         return JsonResponse(results, safe=False)
-    
-# class ProductSearchView(TemplateView):
-#     def get(self, request, *args, **kwargs):
-#         search_term = request.GET.get('search_term', '')
-#         products = ProductDataGeneral.objects.filter(name__icontains=search_term)
-#         data = [{'id': product.id, 'name': product.name} for product in products]
-#         return JsonResponse({'results': data})
 
 
+class ProductCreateView(CreateView):
+    model = ProductDataGeneral
+    template_name = 'product/created_product_date.html'  # Ruta a tu plantilla HTML existente
+    fields = ['name', 'img', 'category', 'sub_category', 'brand', 'provider', 'number_serie', 'description']
+    success_url = reverse_lazy('products:product-list')
 
-class CreateProductView(CreateView):
-    template_name = 'product/created_product_date.html'
+    def form_valid(self, form):
+        form.instance.user_create_price = self.request.user  # Asigna el usuario actual como creador del producto
+        return super().form_valid(form)
 
-    def get(self, request):
-        product_form = ProductForm()
-        price_form =  ValuePriceForm()
-        return render(request, self.template_name, {'product_form': product_form, 'price_form': price_form})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['price_form'] = ValuesPriceProduct()  # Crea una instancia de ValuesPriceProduct
+        return context
 
-  # Asegúrate de crear estos formularios
 
 # class CreateProductView(CreateView):
-#     template_name = 'create_product.html'  # Reemplaza 'create_product.html' con tu plantilla adecuada
+#     template_name = 'product/created_product_date.html'
 
 #     def get(self, request):
-#         product_form = ProductForm()  # Reemplaza con el formulario correspondiente
-#         price_form = ValuePriceForm()  # Reemplaza con el formulario correspondiente
+#         product_form = ProductForm()
+#         price_form =  ValuePriceForm()
 #         return render(request, self.template_name, {'product_form': product_form, 'price_form': price_form})
+    
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['categories'] = Category.objects.all()
+#         context['providers'] = Providers.objects.all()
+#         return context
 
-#     def post(self, request):
-#         product_form = ProductForm(request.POST)  # Reemplaza con el formulario correspondiente
-#         price_form = ValuePriceForm(request.POST)  # Reemplaza con el formulario correspondiente
-
-#         if product_form.is_valid() and price_form.is_valid():
-#             product = product_form.save()
-#             price = price_form.save(commit=False)
-#             price.id_product = product
-#             price.save()
-#             return redirect('nombre_de_la_vista_de_exito')  # Reemplaza con el nombre de tu vista de éxito
-#         else:
-#             return render(request, self.template_name, {'product_form': product_form, 'price_form': price_form})
-
+  # Asegúrate de crear estos formularios
 
 
 

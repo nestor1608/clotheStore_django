@@ -228,7 +228,11 @@
                                     <use xlink:href="#cart"></use>
                                 </svg>
                             </a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Sing In</a></li>
+                            {% if user.is_authenticated %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Sing out</a></li>
+                            {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'custom_login' %}">Sing In</a></li>
+                            {% endif %}
                     </ul>
                 </div>
             </div>

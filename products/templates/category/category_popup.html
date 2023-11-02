@@ -1,0 +1,89 @@
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addItemModalLabel">Agregar un nuevo Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Create New Category</h3>
+                    </div>
+                    <form class="form-horizontal" method="post" id="category-form">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="inputCategory" placeholder="Category" name="name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" name="save_category" class="btn btn-info" id="submit-category-btn">Guardar</button>
+                            <button type="submit" class="btn btn-default float-right">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#submit-category-btn').click(function (event) {
+            event.preventDefault();
+            // Obtener el valor del campo 'name'
+            var categoryName = $('#inputCategory').val();
+
+            // Verificar si el campo 'name' no está vacío
+            if (categoryName.trim() === '') {
+                // Mostrar un mensaje de error en tu modal
+                alert('El campo "Category" es requerido');
+                return;
+            }
+            $.ajax({
+                url: '{% url "products:category-create" %}',
+                type: 'POST',
+                data: {
+
+                    'name': categoryName,
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Actualiza el contenido del párrafo con el mensaje de éxito
+                        $('#addItemModal').html('<p>' + response.message + '</p>');
+                        // Cierra el popup después de un tiempo (por ejemplo, 2 segundos)
+                        setTimeout(function () {
+                            $('#addItemModal').modal('hide');
+                        }, 2000);
+                        location.reload();
+                    } else {
+                        if (response.errors) {
+                            for (var field in response.errors) {
+                                // Itera a través de los errores de cada campo y muéstralos debajo del campo correspondiente
+                                var errorMessages = response.errors[field];
+                                var fieldId = '#id_' + field;
+                                var errorContainer = $(fieldId).next('.invalid-feedback');
+
+                                if (errorContainer.length === 0) {
+                                    errorContainer = $('<div class="invalid-feedback"></div>');
+                                    $(fieldId).after(errorContainer);
+                                }
+
+                                errorContainer.html(errorMessages.join('<br>'));
+                            }
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+</script>
+

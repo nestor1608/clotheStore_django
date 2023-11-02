@@ -1,0 +1,106 @@
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdminLTE 3 | Simple Search Results</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'css/plugins/fontawesome-free/css/all.min.css'%}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'css/adminlte.min.css'%}">
+
+    
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="{% static 'css/plugins/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"> -->
+
+</head>
+
+<body>
+    
+    <section class="content-header">
+        <div class="container-fluid">
+            <h2 class="text-center display-4">Product</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group input-group-lg">
+                        <select id="search-input" class="form-control form-control-lg text-reset" name="search">
+                            <option value="" selected="selected"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a type="button" class="btn btn-success" href="{% url 'products:product-create' %}">
+                        <i class="fas fa-plus"></i> Add Product
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid" id="contenido-dinamico">
+            <div class="row">
+
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Number Serie</th>
+                            <th>Price</th>
+                            <th>Price cost</th>
+                            <th>Price sale</th>
+                            <th>Price wholesale</th>
+                            <th>Price discount</th>
+                            <th>Suggested price</th>
+                            <th>market price</th>
+                            <th>Description</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in product_list %}
+                        <tr data-widget="expandable-table" aria-expanded="false">
+                            <td>{{product.id}}</td>
+                            <td>{{product.name}}</td>
+                            <td>{{product.category}}</td>
+                            <td>{{product.number_serie}}</td>
+                            <td>{{product.price}}</td>
+                            <td>{{product.price_cost}}</td>
+                            <td>{{product.price_sale}}</td>
+                            <td>{{product.price_wholesale}}</td>
+                            <td>{{product.price_discount}}</td>
+                            <td>{{product.suggested_price}}</td>
+                            <td>{{product.market_price}}</td>
+                            <td colspan="5">
+                                <p>
+                                    {{product.description}}
+                                </p>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="12">No hay producto cargado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </section>
+
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

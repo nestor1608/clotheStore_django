@@ -1,14 +1,222 @@
 {% extends "base_dash/dashboard_base.html" %}
 {% load static %}
-{% extends "base.html" %}
 
 {% block content %}
 <div class="container">
     <h2>Create Product</h2>
     <form id="product-form">
-        {{ product_form.as_p }}
+        {% csrf_token %}
+        <div class="card-body">
+            <!-- Campo name -->
+            <div class="form-group mb-3 mt-3">
+                <input class="form-control" type="text" placeholder="Producto" id="id_name"
+                    name="{{ product_form.name.name }}">
+            </div>
+
+            <!-- Campo Marca-->
+            <div class="form-group">
+                <input class="form-control" type="text" placeholder="Marca" id="brand"
+                    name="{{product_form.brand.brand}}">
+
+            </div>
+
+            <!-- Campo category -->
+            <div class="form-group">
+                <label for="id_category">Categoría</label>
+                <select class="custom-select rounded-0" id="id_category" name="{{product_form.category.category]]">
+                    {% for categori in categories %}
+                    <option>{{ categori.name }}</option>
+                    {% empty %}
+                    <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
+                    {% endfor %}
+                    <!-- <option data-form-url="/ruta-del-formulario-de-creacion" ></option> -->
+
+                </select>
+
+                {% include "category/category_popup.html" %}
+            </div>
+
+            <!-- Campo category -->
+            <div class="form-group">
+                <label for="id_category">Sub-Categoría</label>
+                <select class="custom-select rounded-0" id="id_category"
+                    name="{{product_form.sub_category.sub_category]]">
+                    {% for subcategori in subcategories %}
+                    <option>{{ subcategori.name }}</option>
+                    {% empty %}
+                    <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
+                    {% endfor %}
+                    <!-- <option data-form-url="/ruta-del-formulario-de-creacion" ></option> -->
+
+                </select>
+
+                {% include "category/category_popup.html" %}
+            </div>
+
+
+            <!-- Campo Proveedor -->
+            <div class="form-group">
+                <label id="provider">Proveedor</label>
+                <select class="custom-select rounded-0" id="provider" name="{{product_form.provider.provider}}">
+                    {% for provider in providers %}
+                    <option>{{provider.bussines_name}}</option>
+                    {% empty %}
+                    <option>Sin registros</option>
+                    {% endfor %}
+                    <option data-form-url="/ruta-del-formulario-de-creacion">Agregar Provider</option>
+
+                </select>
+            </div>
+
+            <!-- Campo imagen_url -->
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="id_img" name="{{product_form.img.img}}">
+                <label class="custom-file-label" for="id_imagen_url">Imagen</label>
+            </div>
+
+            <!-- campo Nuemero de serie -->
+            <div class="form-group mb-3 mt-3">
+                <input class="form-control" type="text" placeholder="Numero de Serie"
+                    name="{{product_form.number_serie.number_serie}}" id="number_serie">
+            </div>
+            <!-- textarea -->
+            <div class="form-group">
+                <textarea class="form-control" rows="3" placeholder="Descripcion ..." id="description"
+                    name="{{product_form.description.description}}"></textarea>
+            </div>
+        </div>
+        <!-- {{ product_form.as_p }} -->
+
         <div id="price-form" style="display:none;">
-            {{ price_form.as_p }}
+            <div class="card-body">
+                <!--campo price -->
+                <label for="inputPrice">Price Cost</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" id="inputPrice" name=" {{price_form.price_cost.price_cost}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo price_cost -->
+                <label for="inputPrice">Real Price cost</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.real_price_cost.real_price_cost}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo price_sale -->
+                <label for="inputPrice">Profit Margin</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" value="00.00" name="{{price_form.profit_margin.profit_margin}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo price_wholesale(por mayor) -->
+                <label for="inputPrice">Suggested Price</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="text" class="form-control" name="{{price_form.suggested_price.suggested_price}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo price_discount -->
+                <label for="inputPrice">Market Price</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.market_price.market_price}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo suggested_price -->
+                <label for="inputPrice">Last Price</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.last_price.last_price}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo market_price -->
+                <label for="inputPrice">Discount</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.discount.discount}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo last_price -->
+                <label for="inputPrice">Price Wholesale</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.price_wholesale.price_wholesale}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo last_price -->
+                <label for="inputPrice">Price Discount</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.price_discount.price_discount}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Campo last_price -->
+                <label for="inputPrice"><strong>Price Sale</strong> </label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" class="form-control" name="{{price_form.price_sale.price_sale}}">
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
+
+                <!-- Discount -->
+                <div class="form-group">
+                    <label for="customRange1">Profit Margin</label>
+                    <input type="range" class="custom-range" id="customRange1">
+                </div>
+
+            </div>
+            <!-- {{ price_form.as_p }} -->
         </div>
         <div class="form-group">
             <button type="button" id="prev-button" class="btn btn-secondary">Previous</button>
@@ -16,11 +224,12 @@
         </div>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         var currentForm = 'product-form';
-        
-        $('#next-button').on('click', function() {
+
+        $('#next-button').on('click', function () {
             if (currentForm === 'product-form') {
                 $('#product-form').hide();
                 $('#price-form').show();
@@ -28,7 +237,7 @@
             }
         });
 
-        $('#prev-button').on('click', function() {
+        $('#prev-button').on('click', function () {
             if (currentForm === 'price-form') {
                 $('#price-form').hide();
                 $('#product-form').show();
@@ -39,45 +248,3 @@
 </script>
 
 {% endblock %}
-
-<!-- {% block content %}
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">General</h3>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                <i class="fas fa-minus"></i>
-            </button>
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="form-group">
-            <label for="inputName">Project Name</label>
-            <input type="text" id="inputName" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="inputDescription">Project Description</label>
-            <textarea id="inputDescription" class="form-control" rows="4"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="inputStatus">Status</label>
-            <select id="inputStatus" class="form-control custom-select">
-                <option selected="" disabled="">Select one</option>
-                <option>On Hold</option>
-                <option>Canceled</option>
-                <option>Success</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="inputClientCompany">Client Company</label>
-            <input type="text" id="inputClientCompany" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="inputProjectLeader">Project Leader</label>
-            <input type="text" id="inputProjectLeader" class="form-control">
-        </div>
-    </div>
-    <!-- /.card-body -->
-</div>
-{% endblock %} -->
