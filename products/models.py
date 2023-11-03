@@ -17,6 +17,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Article(models.Model):
     
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
@@ -58,7 +59,16 @@ class Brand (models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+
+
+class ColorModel(models.Model):
+    name = models.CharField(max_length=50)
     
+    color = ColorField("color", default="#00000")
+    
+    def __str__(self):
+        return self.name
+
 
 class ProductDataGeneral(models.Model):
     CHOICE_GENERE = [('male','Male'),
@@ -72,7 +82,7 @@ class ProductDataGeneral(models.Model):
     
     description = models.CharField(max_length=250, blank=True, null=True)
     
-    color = ColorField(("color"), default="#FFFF00")
+    color = models.ForeignKey(ColorModel,on_delete=models.SET_NULL, blank=True, null=True)
     
     gener = models.CharField(max_length=7, choices= CHOICE_GENERE)
     img = models.ImageField(upload_to='media/product')
@@ -93,6 +103,8 @@ class ProductDataGeneral(models.Model):
 
     def __str__(self):
         return f'{self.product_id} - {self.name}'
+
+
 
 # ------------------ VARIABLES QUE DETERMINAN EL PRECIO DE VENTA -----------------------
 
@@ -148,9 +160,9 @@ class ValuesPriceProduct(models.Model):
 # ----------------- COSTO DE PRODUCTO --------------------------------
 
 class ProductCost(models.Model):
-    id_product = models.ForeignKey(ProductDataGeneral, on_delete=models.DO_NOTHING)
+    id_product = models.ForeignKey(ProductDataGeneral, on_delete=models.DO_NOTHING, blank=True, null=True)
     product_cost_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable= False)
-    amount_total_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    amount_total_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, default=0)
     
     # Fecha de registro (fecha de creación)
     created_at = models.DateTimeField(auto_now_add=True)

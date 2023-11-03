@@ -9,48 +9,69 @@
             {% csrf_token %}
             <!-- Campo name -->
             <div class="form-group mb-3 mt-3">
-                <input class="form-control" type="text" placeholder="Producto" id="id_name" name="{{ form.name.name }}">
+                <label for="id_category">Article</label>
+                <select class="custom-select" id="id_category" name="article">
+                    <option value="">Selecciona una categoría</option>
+                    {% for article in form.article.field.queryset %}
+                    <option value="{{article.pk}}" >{{article.article}}  {{article.name }}</option>
+                    {% empty %}
+                    <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
+                    {% endfor %}
+                </select>
             </div>
 
+            
+            <!-- Campo Description-->
+            <div class="form-group">
+                <input class="form-control" type="text" placeholder="Description" id="brand" name="description">
+            </div>
             <!-- Campo Marca-->
-            <div class="form-group">
-                <input class="form-control" type="text" placeholder="Marca" id="brand" name="{{form.brand.brand}}">
-
-            </div>
-
-            <!-- Campo category -->
-            <div class="form-group">
-                <label for="id_category">Categoría</label>
-                <select class="custom-select rounded-0" id="id_category" name="{{form.category.category]]">
-                    {% for categori in categories %}
-                    <option>{{ categori.name }}</option>
+            <div class="form-group mb-3 mt-3">
+                <label for="id_category">Brand</label>
+                <select class="custom-select" id="id_category" name="brand">
+                    <option value="">Selecciona una categoría</option>
+                    {% for article in form.brand.field.queryset %}
+                    <option value="{{article.pk}}" >{{article.article}}  {{article.name }}</option>
                     {% empty %}
                     <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
                     {% endfor %}
-                    <!-- <option data-form-url="/ruta-del-formulario-de-creacion" ></option> -->
-
                 </select>
             </div>
 
-            <!-- Campo category -->
-            <div class="form-group">
-                <label for="id_category">Sub-Categoría</label>
-                <select class="custom-select rounded-0" id="id_category" name="{{form.sub_category.sub_category]]">
-                    {% for subcategori in subcategories %}
-                    <option>{{ subcategori.name }}</option>
+            <!-- Campo Color -->
+            <div class="form-group mb-3 mt-3">
+                <label for="id_category">Color</label>
+                <select class="custom-select" id="id_category" name="color">
+                    <option value="">Select one color</option>
+                    {% for color in form.color.field.queryset %}
+                    <option value="{{color.pk}}" >{{color.name }}</option>
                     {% empty %}
                     <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
                     {% endfor %}
-                    <!-- <option data-form-url="/ruta-del-formulario-de-creacion" ></option> -->
-
                 </select>
+            </div>
+            
 
-                
+            <!-- Campo Genere -->
+            <div class="form-group mb-3 mt-3">
+                <label id="gener">Genere</label>
+                <select class="custom-select" name="gener">
+                    {% for choice in choices_gener %}
+                        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
-
+            
+            <!-- Campo imagen_url -->
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="id_img" name="img">
+                <label class="custom-file-label" for="id_imagen_url">Imagen</label>
+            </div>
+            
+            <input type="hidden" name="user_create_price" value="{{user.id}}">
             <!-- Campo Proveedor -->
-            <div class="form-group">
+            <div class="form-group mb-3 mt-3">
                 <label id="provider">Proveedor</label>
                 <select class="custom-select rounded-0" id="provider" name="{{form.provider.provider}}">
                     {% for provider in providers %}
@@ -62,27 +83,14 @@
 
                 </select>
             </div>
-
-            <!-- Campo imagen_url -->
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="id_img" name="{{form.img.img}}">
-                <label class="custom-file-label" for="id_imagen_url">Imagen</label>
-            </div>
-
             <!-- campo Nuemero de serie -->
             <div class="form-group mb-3 mt-3">
                 <input class="form-control" type="text" placeholder="Numero de Serie"
                     name="{{form.number_serie.number_serie}}" id="number_serie">
             </div>
-            <!-- textarea -->
-            <div class="form-group">
-                <textarea class="form-control" rows="3" placeholder="Descripcion ..." id="description"
-                    name="{{form.description.description}}"></textarea>
-            </div>
-
 
             <div class="form-group">
-                <button type="button" id="next-button" class="btn btn-primary">Next</button>
+                <button type="submit" id="next-button" class="btn btn-primary">Create Product</button>
             </div>
         </form>
     </div>

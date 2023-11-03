@@ -1,0 +1,13 @@
+<div class="card-body" >
+    <form method="post" id="brand-form">
+        {% csrf_token %}
+        <!-- Campo name -->
+        <div class="form-group">
+            <input class="form-control" type="text" placeholder="Brand" id="brandName" name="name">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" id="next-button" class="btn btn-primary">Create Color</button>
+        </div>
+    </form>
+</div>

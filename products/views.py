@@ -1,11 +1,14 @@
 from django.http import JsonResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy,reverse
+from decimal import Decimal
+from django.db.models import Sum
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from .forms import ProductForm, CategoryForm, ValuesPriceProductForm
-from .models import ProductDataGeneral, Category,ValuesPriceProduct,Article, ProductCost, ItemProductCost,ModelClothing
+from .models import ProductDataGeneral, Category,ValuesPriceProduct,Article, ProductCost, ItemProductCost,ModelClothing, Brand, ColorModel
 from providers.models import Providers
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseRedirect
 
 class ProductListView(ListView):
     model = ProductDataGeneral
@@ -35,15 +38,27 @@ class CreateCardProductView(TemplateView):
 class CreateProductView(CreateView):
     model = ProductDataGeneral
     template_name = 'product/created_product_date.html'
-    fields = [ 'article', 'brand','color','description','img', 'provider', 'number_serie', ]
-    success_url = reverse_lazy('products:product-card')  # Reemplaza con la URL adecuada
+    fields = [ 'article', 'brand','gener','color','description','img', 'provider', 'number_serie', ]
+
 
     def form_valid(self, form):
-        form.instance.user_create_price = self.request.user  # Asigna el usuario actual como creador del producto
-        response = super().form_valid(form)
-        product_id = self.object.id  # Obtiene el ID del producto creado
-        return JsonResponse({'id': product_id})  
-
+        form.instance.user_create_price = self.request.user  
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        return JsonResponse({'message':f'algo salio mal{form.errors}'})
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['choices_gener'] = ProductDataGeneral.CHOICE_GENERE
+        return context
+    
+    def get_success_url(self):
+        product_id = self.object.id
+        return reverse_lazy('products:value-price', kwargs={'product_id': product_id})
+    
 
 class ValuePriceCreateView(CreateView):
     model = ValuesPriceProduct
@@ -56,7 +71,6 @@ class ValuePriceCreateView(CreateView):
         form_kwargs = {'id_product': id_product}
         form = ValuesPriceProductForm(**form_kwargs)  # Utiliza el constructor del formulario
         return form
-
 
 
 class CategoryCreateView(CreateView):
@@ -116,10 +130,10 @@ class ArticleCreateView(CreateView):
         context["category_list"] = Category.objects.all() 
         context["article_list"] = Article.objects.all() 
         return context
-    
-    
+
+
 class ClothingModelCreateView(CreateView):
-    model = Article
+    model = ModelClothing
     template_name = 'product/clothing_model/create_clothing_model.html'
     fields = '__all__'
     
@@ -146,6 +160,85 @@ class ClothingModelCreateView(CreateView):
         context['article_list'] = Article.objects.all()
         context["clothing_model_list"] = ModelClothing.objects.all() 
         return context
+
+
+class ProductCostCreateView(CreateView):
+    @method_decorator(csrf_exempt)
+    def post(self, request):
+        product_cost = ProductCost.objects.create(amount_total_percentage=0)
+        return JsonResponse({'id_product': product_cost.id})
+
+
+class ItemProductCostCreateView(CreateView):
+    model = ItemProductCost
+    template_name = 'product/cost/create_item_cost.html'
+    fields = ['description_cost', 'amounts_cost', 'add_price']
+
+    def get_initial(self):
+        # Obtiene el id del ProductCost pasado en la URL
+        id_product_cost = self.kwargs['id_product_cost']
+        return {'id_product_cost': id_product_cost}
+    
+    def form_valid(self, form):
+        # Obtén el ProductCost relacionado con este ItemProductCost
+        id_product_cost = self.kwargs['id_product_cost']
+        product_cost = ProductCost.objects.get(id=id_product_cost)
+
+        # Crea una nueva instancia de ItemProductCost
+        item_cost = form.save(commit=False)
+        item_cost.id_product_cost = product_cost
+        item_cost.save()
+
+        # Actualiza el campo 'amount' del ProductCost sumando todos los amounts de los ItemProductCost relacionados
+        total_amount = product_cost.itemproductcost_set.aggregate(total_amount=Sum('amounts_cost'))['total_amount'] or 0
+        product_cost.amount_total_percentage = Decimal(total_amount)
+        product_cost.save()
+
+        return super().form_valid(form)
+
+
+class BrandCreateView(CreateView):
+    model = Brand
+    fields = '__all__'
+    template_name = "product/brand/create_brand.html"
+    
+    def form_valid(self, form):
+        form.save()
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        errors = form.errors.as_json()
+        return JsonResponse({'success': False, 'errors': errors})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["brand_list"] = Brand.objects.all()
+        return context
+
+
+class ColorCreateView(CreateView):
+    model = ColorModel
+    fields = '__all__'
+    template_name = "product/color/create_color.html"
+    
+    def form_valid(self, form):
+        # Customize the behavior when the form is valid
+        # For example, you can save the form and return a JSON response
+        form.save()
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        # Customize the behavior when the form is invalid
+        # For example, return a JSON response with errors
+        errors = form.errors.as_json()
+        return JsonResponse({'success': False, 'errors': errors})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["color_list"] = ColorModel.objects.all()
+        return context
+
+
 
 
 
@@ -206,37 +299,7 @@ class CategoryDeleteView(DeleteView):
 
 
 
-class ProductCostCreateView(CreateView):
-    @method_decorator(csrf_exempt)
-    def post(self, request):
-        product_cost = ProductCost.objects.create(amount=0)
-        return JsonResponse({'id_product': product_cost.id})
 
-class ItemProductCostCreateView(CreateView):
-    model = ItemProductCost
-    template_name = 'itemproductcost_form.html'
-    fields = ['description_cost', 'amounts_cost', 'add_price']
-
-    def get_initial(self):
-        # Obtiene el id del ProductCost pasado en la URL
-        id_product_cost = self.kwargs['id_product_cost']
-        return {'id_product_cost': id_product_cost}
-    
-    def form_valid(self, form):
-        # Obtén el ProductCost relacionado con este ItemProductCost
-        id_product_cost = self.kwargs['id_product_cost']
-        product_cost = ProductCost.objects.get(id=id_product_cost)
-
-        # Crea una nueva instancia de ItemProductCost
-        item_cost = form.save(commit=False)
-        item_cost.id_product_cost = product_cost
-        item_cost.save()
-
-        # Actualiza el campo 'amount' del ProductCost sumando todos los amounts de los ItemProductCost relacionados
-        product_cost.amount = product_cost.itemproductcost_set.aggregate(total_amount=sum('amounts_cost'))['total_amount'] or 0
-        product_cost.save()
-
-        return super().form_valid(form)
 
 # class ProductCostListView(ListView):
 #     model = ProductCost

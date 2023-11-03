@@ -1,0 +1,56 @@
+{% extends "base_dash/dashboard_base.html" %}
+{% load static %}
+{% block content %}
+    <h1>Agregar Costo del Producto</h1>
+    <form method="post" id="item_cost_form">
+        {% csrf_token %}
+        
+        <div class="item-cost">
+            {{ form.description_cost.label_tag }}
+            {{ form.description_cost }}
+            {{ form.amounts_cost.label_tag }}
+            {{ form.amounts_cost }}
+            {{ form.add_price.label_tag }}
+            {{ form.add_price }}
+        </div>
+        
+        <button type="button" id="add_item_cost">Add Item</button>
+        <button type="button" id="discard_item_cost">Delete Item</button>
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="{% url 'products:product-card' %}">Volver a los detalles del producto</a>
+
+
+    <script>
+        let itemCount = 1;
+
+        document.getElementById('add_item_cost').addEventListener('click', function() {
+            const itemCostDiv = document.querySelector('.item-cost');
+            const newItemCostDiv = itemCostDiv.cloneNode(true);
+            itemCount++;
+            newItemCostDiv.innerHTML = newItemCostDiv.innerHTML.replace(/form-(\d+)-/g, `form-${itemCount}-`);
+            document.getElementById('item_cost_form').insertBefore(newItemCostDiv, this);
+        });
+
+        document.getElementById('discard_item_cost').addEventListener('click', function() {
+            // Encuentra el elemento padre y elimínalo (el conjunto de campos)
+            const itemCostDiv = this.parentNode.querySelector('.item-cost');
+            if (itemCostDiv) {
+                itemCostDiv.remove();
+            }
+        });
+
+        document.getElementById('item_cost_form').addEventListener('input', function() {
+            const amounts = document.querySelectorAll('[id^=id_itemproductcost_set]');
+            let totalAmount = 0;
+
+            amounts.forEach(function (amount) {
+                totalAmount += parseFloat(amount.value) || 0;
+            });
+
+            document.getElementById('id_amount').value = totalAmount;
+        });
+    </script>
+  
+{% endblock  %}
+

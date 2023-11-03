@@ -1,0 +1,94 @@
+{% extends "base_dash/dashboard_base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="card-body border-dark-subtle">
+                {% include "product/brand/brand_form.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+            <div class="alert" id="article-alert" style="display: none;"></div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="card-body">
+            <table class="table table-bordered table-hover" id="categories-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">#</th>
+                        <th style="width: 40%;">Name</th>
+                        <th style="width: 10%;">Edit</th>
+                        <!-- Otros encabezados de columna -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for brand in brand_list %}
+                    <tr>
+                        <td>{{ brand.id }}</td>
+                        <td>{{ brand.name}}</td>
+                        <td>
+                            <a class="btn btn-info btn-sm" href="#">
+                                <i class="fas fa-pencil-alt">
+                                </i>
+
+                            </a>
+                            <a class="btn btn-danger btn-sm delete-object"
+                                href="#">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td>There aren't brand</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#brand-form").on("submit", function (event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+            
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'products:brand-create' %}",
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        // Color created successfully, you can update the table or perform other actions as needed
+                        $("#brandName").val(""); // Limpia el campo de entrada.
+                        $("#article-alert").html('<div class="alert alert-success" role="alert">Brand added correctly.</div>').show();
+
+                        // Recarga la página después de un breve retraso (por ejemplo, 2 segundos).
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+
+                    } else {
+                        // Handle errors, display them on the page, etc.
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+{% endblock %}
