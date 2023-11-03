@@ -1,0 +1,82 @@
+
+{% load static %}
+
+
+<div class="container">
+    <div class="row align-content-center justify-content-center" style="height: 800%;">
+
+        <div class="col-4 mt-2">
+            <a href="{% url 'products:product-create' %}">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Product Data General</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-4 mt-2">
+            <a href="{% url 'products:value-price-create' %}">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Product Value Price</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-4 mt-2">
+            <a href="#" id="createProductCost">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Product Data Cost</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-4 mt-2 ">
+            <a href="{% url 'products:category-create' %}">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Create Category</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-4 mt-2">
+            <a href="{% url 'products:article-create' %}">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Create Article</h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-4 mt-2">
+            <a href="{% url 'products:clothing-model-create' %}">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Create Clothing Model </h3>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('createProductCost').addEventListener('click', function() {
+        // Realiza una solicitud POST al servidor para crear una instancia de ProductCost con amount en 0
+        fetch('/productcost_add/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Redirige a la página para agregar instancias de ItemProductCost
+            window.location.href = '/create_item_cost/' + data.id_product;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>

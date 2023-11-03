@@ -1,0 +1,145 @@
+{% extends "base_dash/dashboard_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+            <div class="card-body" id="price-form">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!--campo price -->
+                    <label for="inputPrice">Price Cost</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" id="inputPrice"
+                            name=" {{form.price_cost.price_cost}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo price_cost -->
+                    <label for="inputPrice">Real Price cost</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.real_price_cost.real_price_cost}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo price_sale -->
+                    <label for="inputPrice">Profit Margin</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" value="00.00"
+                            name="{{form.profit_margin.profit_margin}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo price_wholesale(por mayor) -->
+                    <label for="inputPrice">Suggested Price</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="text" class="form-control" name="{{form.suggested_price.suggested_price}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo price_discount -->
+                    <label for="inputPrice">Market Price</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.market_price.market_price}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo suggested_price -->
+                    <label for="inputPrice">Last Price</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.last_price.last_price}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo market_price -->
+                    <label for="inputPrice">Discount</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.discount.discount}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo last_price -->
+                    <label for="inputPrice">Price Wholesale</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.price_wholesale.price_wholesale}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo last_price -->
+                    <label for="inputPrice">Price Discount</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.price_discount.price_discount}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Campo last_price -->
+                    <label for="inputPrice"><strong>Price Sale</strong> </label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control" name="{{form.price_sale.price_sale}}">
+                        <div class="input-group-append">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Discount -->
+                    <div class="form-group">
+                        <label for="customRange1">Profit Margin</label>
+                        <input type="range" class="custom-range" id="customRange1">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Product</button>
+                </form>
+            </div>
+        
+        <!-- /.card-body -->
+    </div>
+</div>
+{% endblock %}

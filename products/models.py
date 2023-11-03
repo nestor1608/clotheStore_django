@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from providers.models import Providers
 import shortuuid
 from django.core.exceptions import ValidationError
+from spectrum.fields import ColorField
 
 class Category(models.Model):
-
     name = models.CharField(max_length=50)
     
     # Fecha de registro (fecha de creación)
@@ -17,9 +17,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class SubCategory(models.Model):
+class Article(models.Model):
     
-    associated_category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     name = models.CharField(max_length=50)
 
@@ -29,25 +29,58 @@ class SubCategory(models.Model):
     # Fecha de actualización (fecha de última modificación)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return self.name
+
+
+class ModelClothing(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.SET_NULL, blank=True, null=True)
+
+    name = models.CharField(max_length=50)
+
+    # Fecha de registro (fecha de creación)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Fecha de actualización (fecha de última modificación)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.article.category} - {self.article.name} - {self.name}'
+
+
+class Brand (models.Model):
+    name = models.CharField(max_length=100)
+    
+    # Fecha de registro (fecha de creación)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Fecha de actualización (fecha de última modificación)
+    updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
     
 
 class ProductDataGeneral(models.Model):
+    CHOICE_GENERE = [('male','Male'),
+                    ('female','Female'),
+                    ('unisex','Unisex')]
     product_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable= False)
-    name = models.CharField(max_length=100)
-    img = models.ImageField(upload_to='media/product')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     
-    sub_category = models.ForeignKey(SubCategory, on_delete=models.DO_NOTHING)
-    brand = models.CharField(max_length=50, blank=True, null=True) 
+    article = models.ForeignKey(ModelClothing, on_delete=models.SET_NULL, blank=True, null=True)
+    
+    brand = models.ForeignKey(Brand,on_delete=models.SET_NULL, blank=True, null=True)
+    
+    description = models.CharField(max_length=250, blank=True, null=True)
+    
+    color = ColorField(("color"), default="#FFFF00")
+    
+    gener = models.CharField(max_length=7, choices= CHOICE_GENERE)
+    img = models.ImageField(upload_to='media/product')
     
     provider = models.ManyToManyField(Providers, blank=True, related_name='provider')
     
     number_serie = models.CharField(max_length=100, blank=True, null=True)
 
-    description = models.TextField(blank=True, null=True)
-    
     # persona que realiza la carga del producto
     user_create_price = models.ForeignKey(User, on_delete=models.DO_NOTHING, editable= False)
     
