@@ -239,21 +239,8 @@ class ColorCreateView(CreateView):
         return context
 
 
+#------------------------------------- UPDATE--------------------------------------
 
-
-
-
-
-class CategoryList(ListView):
-    model = Category
-    context_object_name = 'category_list'
-    
-    
-    
-class ProductDetailView(DetailView):
-    model = ProductDataGeneral
-    template_name = 'product_detail.html'
-    
 
 class ProductUpdateView(UpdateView):
     model = ProductDataGeneral
@@ -261,17 +248,6 @@ class ProductUpdateView(UpdateView):
     fields = '__all__'
     success_url = reverse_lazy('product-list')
 
-
-class ProductDeleteView(DeleteView):
-    model = ProductDataGeneral
-    template_name = None
-    success_url = reverse_lazy('product-list')
-
-
-
-class CategoryDetailView(DetailView):
-    model = Category
-    template_name = 'categoria_detail.html'
 
 class CategoryUpdateView(UpdateView):
     model = Category
@@ -283,6 +259,56 @@ class CategoryUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['name'] = self.object.name  # Agrega el nombre al contexto
         return context
+
+
+class ArticleUpdateView(UpdateView):
+    model = Article
+    template_name = "product/article/create_article.html"
+
+
+class ClothingModelUpdateView(UpdateView):
+    model = ModelClothing
+    template_name = "product/clothing_model/create_clothing_model.html"
+
+
+class ProductCostUpdateView(UpdateView):
+    model = ProductCost
+    template_name = ".html"
+
+
+class ItemProductCostUpdateView(UpdateView):
+    model = ItemProductCost
+    template_name = ".html"
+
+
+class BrandUpdateView(UpdateView):
+    model = Brand
+    template_name = ".html"
+
+
+class ColorUpdateView(UpdateView):
+    model = ColorModel
+    template_name = ".html"
+
+
+
+# ------------------------------------------------------ DELETE -----------------------------------------
+
+class ProductDeleteView(DeleteView):
+    model = ProductDataGeneral
+    template_name = None
+    success_url = reverse_lazy('product-list')
+
+
+class ProductDetailView(DetailView):
+    model = ProductDataGeneral
+    template_name = 'product_detail.html'
+    
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'categoria_detail.html'
+
 
 
 

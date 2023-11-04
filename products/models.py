@@ -108,6 +108,7 @@ class ProductDataGeneral(models.Model):
 
 # ------------------ VARIABLES QUE DETERMINAN EL PRECIO DE VENTA -----------------------
 
+
 class ValuesPriceProduct(models.Model):
     id_product = models.ForeignKey(ProductDataGeneral, on_delete=models.CASCADE)
     
@@ -154,7 +155,6 @@ class ValuesPriceProduct(models.Model):
         # Validación personalizada: El precio de venta no debe ser menor que el precio de compra
         if self.price_sale is not None and self.price_cost is not None and self.price_sale < self.price_cost:
             raise ValidationError("El precio de venta no puede ser menor que el precio de compra.")
-        
 
 
 # ----------------- COSTO DE PRODUCTO --------------------------------
