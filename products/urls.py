@@ -17,7 +17,7 @@ urlpatterns = [
     
     # path('products/autocomplete/', login_required(views.AutocompleteProductsView.as_view()), name='autocomplete-products'),
 
-    path('category_list/', login_required(views.CategoryList.as_view()), name='category-list'),
+    #path('category_list/', login_required(views.CategoryList.as_view()), name='category-list'),
     
     path('product_add/', login_required( views.CreateProductView.as_view()), name='product-create'),
     path('productcost_add/', views.ProductCostCreateView.as_view(), name='productcost_create'),
@@ -38,6 +38,7 @@ urlpatterns = [
     
     path('create_item_cost/<int:id_product_cost>/', views.ItemProductCostCreateView.as_view(), name='create_item_cost'),
     
+    path('card_dashboard/', views.CreateCardProductView.as_view(), name='dashboard_card'),
 ]
 
 if settings.DEBUG:

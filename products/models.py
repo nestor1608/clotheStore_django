@@ -102,7 +102,7 @@ class ProductDataGeneral(models.Model):
 
 
     def __str__(self):
-        return f'{self.product_id} - {self.name}'
+        return f'{self.article}'
 
 
 
@@ -162,7 +162,7 @@ class ValuesPriceProduct(models.Model):
 class ProductCost(models.Model):
     id_product = models.ForeignKey(ProductDataGeneral, on_delete=models.DO_NOTHING, blank=True, null=True)
     product_cost_id = models.CharField(max_length=11, unique=True, default=shortuuid.uuid, editable= False)
-    amount_total_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, default=0)
+    amount_total_percentage = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, default=0)
     
     # Fecha de registro (fecha de creación)
     created_at = models.DateTimeField(auto_now_add=True)

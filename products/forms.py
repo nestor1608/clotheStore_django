@@ -1,5 +1,5 @@
 from django import forms
-from .models import ProductDataGeneral, Category,ValuesPriceProduct,Article
+from .models import ProductDataGeneral, Category,ValuesPriceProduct,Article,ItemProductCost
 
 
 
@@ -38,3 +38,9 @@ class SubCategoryForm(forms.ModelForm):
 
 
 
+class ItemProductCostForm(forms.ModelForm):
+    id_product = forms.IntegerField(widget=forms.HiddenInput())
+
+    class Meta:
+        model = ItemProductCost
+        fields = ['description_cost', 'amounts_cost', 'add_price']

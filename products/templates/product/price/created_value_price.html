@@ -55,10 +55,10 @@
                     {% if form.id_product %}
                                 <div class="form-group mb-3 mt-3">
                                 <label for="id_category">Color</label>
-                                <select class="custom-select" id="id_category" name="color">
+                                <select class="custom-select" id="id_category" name="color" >
                                     <option value="">Select one color</option>
-                                    {% for color in form.id_product.field.queryset %}
-                                    <option value="{{color.pk}}" >{{color.article }}</option>
+                                    {% for id in form.id_product.field.queryset %}
+                                    <option value="{{id.pk}}" >{{id.article }}</option>
                                     {% empty %}
                                     <option data-bs-toggle="modal" data-bs-target="#addItemModal">Sin registros</option>
                                     {% endfor %}

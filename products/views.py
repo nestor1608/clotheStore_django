@@ -3,7 +3,7 @@ from django.urls import reverse_lazy,reverse
 from decimal import Decimal
 from django.db.models import Sum
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
-from .forms import ProductForm, CategoryForm, ValuesPriceProductForm
+from .forms import ItemProductCostForm, ValuesPriceProductForm
 from .models import ProductDataGeneral, Category,ValuesPriceProduct,Article, ProductCost, ItemProductCost,ModelClothing, Brand, ColorModel
 from providers.models import Providers
 from django.utils.decorators import method_decorator
@@ -31,6 +31,8 @@ class ProductListView(ListView):
         context['subcategories'] = Article.objects.all()
         return context
 
+
+# -------------------------------------- create ------------------------------------
 class CreateCardProductView(TemplateView):
     template_name = "product/card_create_product.html"
 
@@ -58,7 +60,7 @@ class CreateProductView(CreateView):
     def get_success_url(self):
         product_id = self.object.id
         return reverse_lazy('products:value-price', kwargs={'product_id': product_id})
-    
+
 
 class ValuePriceCreateView(CreateView):
     model = ValuesPriceProduct
@@ -172,29 +174,59 @@ class ProductCostCreateView(CreateView):
 class ItemProductCostCreateView(CreateView):
     model = ItemProductCost
     template_name = 'product/cost/create_item_cost.html'
-    fields = ['description_cost', 'amounts_cost', 'add_price']
+    form_class = ItemProductCostForm
+    success_url = reverse_lazy('products:dashboard_card')
 
     def get_initial(self):
         # Obtiene el id del ProductCost pasado en la URL
         id_product_cost = self.kwargs['id_product_cost']
-        return {'id_product_cost': id_product_cost}
+        return {'id_product_cost': id_product_cost,'id_product': self.kwargs.get('id_product', None)}
     
+    
+    def get_product_id(self,):
+        product_cost = ProductCost.objects.get(id=self.kwargs['id_product_cost'])
+        return product_cost.id_product
+
+
     def form_valid(self, form):
         # Obtén el ProductCost relacionado con este ItemProductCost
         id_product_cost = self.kwargs['id_product_cost']
         product_cost = ProductCost.objects.get(id=id_product_cost)
+
 
         # Crea una nueva instancia de ItemProductCost
         item_cost = form.save(commit=False)
         item_cost.id_product_cost = product_cost
         item_cost.save()
 
+        
         # Actualiza el campo 'amount' del ProductCost sumando todos los amounts de los ItemProductCost relacionados
         total_amount = product_cost.itemproductcost_set.aggregate(total_amount=Sum('amounts_cost'))['total_amount'] or 0
+        # Obtener el id_product desde la URL o desde el formulario
+        print("Formulario válido")
+        # Obtener el id_product desde el URL o desde el formulario
+        id_product = self.kwargs.get('id_product') or form.cleaned_data.get('id_product', None)
+
+        # Obtener la instancia de ProductDataGeneral
+        product_data_general = ProductDataGeneral.objects.get(id=id_product)
+
+        # Asignar la instancia a id_product de ProductCost
+        product_cost.id_product = product_data_general
+        product_cost.save()
+        # print(id_product)
+        # print("Datos del formulario:", form.cleaned_data)
+        product_cost.id_product_id = id_product
         product_cost.amount_total_percentage = Decimal(total_amount)
         product_cost.save()
-
+        
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = self.get_product_id()
+        context['product_list'] = ProductDataGeneral.objects.all() 
+        return context
+    
 
 
 class BrandCreateView(CreateView):
@@ -323,16 +355,3 @@ class CategoryDeleteView(DeleteView):
         response_data = {'message': 'El objeto ha sido eliminado exitosamente.'}
         return JsonResponse(response_data)
 
-
-
-
-
-# class ProductCostListView(ListView):
-#     model = ProductCost
-#     template_name = 'productcost_list.html'
-#     context_object_name = 'product_costs'
-
-# class ItemProductCostListView(ListView):
-#     model = ItemProductCost
-#     template_name = 'itemproductcost_list.html'
-#     context_object_name = 'item_costs'

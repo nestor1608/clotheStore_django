@@ -1,56 +1,81 @@
 {% extends "base_dash/dashboard_base.html" %}
 {% load static %}
 {% block content %}
-    <h1>Agregar Costo del Producto</h1>
-    <form method="post" id="item_cost_form">
-        {% csrf_token %}
-        
-        <div class="item-cost">
-            {{ form.description_cost.label_tag }}
-            {{ form.description_cost }}
-            {{ form.amounts_cost.label_tag }}
-            {{ form.amounts_cost }}
-            {{ form.add_price.label_tag }}
-            {{ form.add_price }}
-        </div>
-        
-        <button type="button" id="add_item_cost">Add Item</button>
-        <button type="button" id="discard_item_cost">Delete Item</button>
-        <button type="submit">Guardar</button>
-    </form>
-    <a href="{% url 'products:product-card' %}">Volver a los detalles del producto</a>
+<h1>Agregar Costo del Producto</h1>
+<form method="post" id="item_cost_form">
+    {% csrf_token %}
+
+    <div>
+        <label for="id_product">Selecciona un Producto:</label>
+        <select name="id_product" id="id_product">
+            {% for product in product_list %}
+                <option value="{{ product.id }}" {% if product.id == selected_product_id %}selected{% endif %}>{{ product.article }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
 
-    <script>
-        let itemCount = 1;
 
-        document.getElementById('add_item_cost').addEventListener('click', function() {
-            const itemCostDiv = document.querySelector('.item-cost');
-            const newItemCostDiv = itemCostDiv.cloneNode(true);
-            itemCount++;
-            newItemCostDiv.innerHTML = newItemCostDiv.innerHTML.replace(/form-(\d+)-/g, `form-${itemCount}-`);
-            document.getElementById('item_cost_form').insertBefore(newItemCostDiv, this);
+    <div class="item-cost">
+        {{ form.description_cost.label_tag }}
+        {{ form.description_cost }}
+        {{ form.amounts_cost.label_tag }}
+        {{ form.amounts_cost }}
+        {{ form.add_price.label_tag }}
+        {{ form.add_price }}
+    </div>
+
+
+    <button type="button" id="add_item_cost">Add Item</button>
+    <button type="button" id="discard_item_cost">Delete Item</button>
+    <button type="submit">Guardar</button>
+</form>
+<a href="{% url 'products:product-card' %}">Volver a los detalles del producto</a>
+
+
+<script>
+    let itemCount = 1;
+
+    document.getElementById('add_item_cost').addEventListener('click', function () {
+        const itemCostDiv = document.querySelector('.item-cost');
+        const newItemCostDiv = itemCostDiv.cloneNode(true);
+        itemCount++;
+        newItemCostDiv.innerHTML = newItemCostDiv.innerHTML.replace(/form-(\d+)-/g, `form-${itemCount}-`);
+        document.getElementById('item_cost_form').insertBefore(newItemCostDiv, this);
+    });
+
+    document.getElementById('discard_item_cost').addEventListener('click', function () {
+        // Encuentra el elemento padre y elimínalo (el conjunto de campos)
+        const itemCostDiv = this.parentNode.querySelector('.item-cost');
+        if (itemCostDiv) {
+            itemCostDiv.remove();
+        }
+    });
+
+    document.getElementById('item_cost_form').addEventListener('input', function () {
+        const amounts = document.querySelectorAll('[id^=id_itemproductcost_set]');
+        let totalAmount = 0;
+
+        amounts.forEach(function (amount) {
+            totalAmount += parseFloat(amount.value) || 0;
         });
 
-        document.getElementById('discard_item_cost').addEventListener('click', function() {
-            // Encuentra el elemento padre y elimínalo (el conjunto de campos)
-            const itemCostDiv = this.parentNode.querySelector('.item-cost');
-            if (itemCostDiv) {
-                itemCostDiv.remove();
-            }
-        });
+        document.getElementById('id_amount').value = totalAmount;
+    });
+    document.getElementById('id_product_select').addEventListener('change', function () {
+        // Actualiza el valor del campo oculto
+        document.getElementById('id_product_hidden').value = this.value;
+    });
+    document.getElementById('item_cost_form').addEventListener('submit', function (event) {
+        // Obtener el valor del campo id_product
+        const idProduct = document.getElementById('id_product').value;
 
-        document.getElementById('item_cost_form').addEventListener('input', function() {
-            const amounts = document.querySelectorAll('[id^=id_itemproductcost_set]');
-            let totalAmount = 0;
+        // Actualizar el valor del campo oculto
+        document.getElementById('id_product_hidden').value = idProduct;
 
-            amounts.forEach(function (amount) {
-                totalAmount += parseFloat(amount.value) || 0;
-            });
+        // Continuar con el envío del formulario
+        return true;
+    });
+</script>
 
-            document.getElementById('id_amount').value = totalAmount;
-        });
-    </script>
-  
-{% endblock  %}
-
+{% endblock %}
